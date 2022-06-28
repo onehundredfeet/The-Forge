@@ -727,7 +727,7 @@ static UploadFunctionResult
 	const TinyImageFormat fmt = (TinyImageFormat)texture->mFormat;
 	FileStream            stream = texUpdateDesc.mStream;
 	Cmd*                  cmd = acquireCmd(pCopyEngine, activeSet);
-
+        
 	ASSERT(pCopyEngine->pQueue->mNodeIndex == texUpdateDesc.pTexture->mNodeIndex);
 
 	const uint32_t sliceAlignment = util_get_texture_subresource_alignment(pRenderer, fmt);
@@ -2742,6 +2742,7 @@ void mtl_compileShader(
 	Renderer* pRenderer, const char* fileName, const char* outFile, uint32_t macroCount, ShaderMacro* pMacros, BinaryShaderStageDesc* pOut,
 	const char* /*pEntryPoint*/)
 {
+	printf("MTL COMPILE SHADER\n");
 	char filePath[FS_MAX_PATH] = {};
 	fsAppendPathComponent(fsGetResourceDirectory(RD_SHADER_SOURCES), fileName, filePath);
 	char outFilePath[FS_MAX_PATH] = {};
@@ -2781,6 +2782,15 @@ void mtl_compileShader(
 		cArgs.push_back(arg.c_str());
 	}
 
+	eastl::string params;
+
+	for (eastl::string& arg : args)
+	{
+		params += " " + arg;
+	}
+	
+	printf("Running %s %s\n", xcrun,params.c_str() );
+	
 	if (systemRun(xcrun, &cArgs[0], cArgs.size(), NULL) == 0)
 	{
 		// Create a .metallib file from the .air file.
@@ -3313,6 +3323,7 @@ bool find_shader_stage(const char* fileName, ShaderDesc* pDesc, ShaderStageDesc*
 #else
 bool find_shader_stage(const char* extension, BinaryShaderDesc* pBinaryDesc, BinaryShaderStageDesc** pOutStage, ShaderStage* pStage)
 {
+	printf("looking for stage in %s\n", extension);
 	if (stricmp(extension, "vert") == 0)
 	{
 		*pOutStage = &pBinaryDesc->mVert;
@@ -3393,6 +3404,7 @@ void addShader(Renderer* pRenderer, const ShaderLoadDesc* pDesc, Shader** ppShad
 			ShaderStage            stage;
 			BinaryShaderStageDesc* pStage = NULL;
 			char                   ext[FS_MAX_PATH] = { 0 };
+			printf("Looking for extension in %s\n", pDesc->mStages[i].pFileName);
 			fsGetPathExtension(pDesc->mStages[i].pFileName, ext);
 			if (find_shader_stage(ext, &binaryDesc, &pStage, &stage))
 				stages |= stage;
@@ -3427,6 +3439,7 @@ void addShader(Renderer* pRenderer, const ShaderLoadDesc* pDesc, Shader** ppShad
                     macros[pRenderer->mBuiltinShaderDefinesCount + pDesc->mStages[i].mMacroCount] = {"VR_MULTIVIEW_ENABLED", "1"};
 #endif
 
+				printf("Load shader stage byte code\n");
 				if (!load_shader_stage_byte_code(
 						pRenderer, pDesc->mTarget, stage, stages, pDesc->mStages[i], macroCount, macros.data(), pStage))
 					return;
@@ -3450,6 +3463,8 @@ void addShader(Renderer* pRenderer, const ShaderLoadDesc* pDesc, Shader** ppShad
 				fsReadFromStream(&fh, pSources[i], metalFileSize);
 				pSources[i][metalFileSize] = 0;    // Ensure the shader text is null-terminated
 				fsCloseStream(&fh);
+
+				printf("Reading metal file\n");
 #elif !defined(ORBIS) && !defined(PROSPERO)
 				if (pDesc->mStages[i].pEntryPointName)
 					pStage->pEntryPoint = pDesc->mStages[i].pEntryPointName;

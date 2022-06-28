@@ -59,11 +59,16 @@ bool initFileSystem(FileSystemInitDesc* pDesc)
 
     NSFileManager* fileManager = [NSFileManager defaultManager];
 	// Get application directory
-	gResourceMounts[RM_CONTENT] = [[[[NSBundle mainBundle] resourceURL] relativePath] UTF8String];
-		
+
+	#ifdef FORGE_OSX_APP
+	gResourceMounts[RM_CONTENT] = [[[[NSBundle mainBundle] resourceURL] relativePath] UTF8String];	
+	#endif
+
 	if(!pDesc->pResourceMounts[RM_CONTENT])
 	{
+		#ifdef FORGE_OSX_APP
 		[fileManager changeCurrentDirectoryPath:[[NSBundle mainBundle] bundlePath]];
+		#endif
 	}
 
 	// Get save directory
@@ -94,8 +99,12 @@ bool initFileSystem(FileSystemInitDesc* pDesc)
 		LOGF(LogLevel::eERROR, "Error retrieving application support directory: %s", [[error description] UTF8String]);
 	}
 #else
+#if FORGE_OSX_APP
 	const char* path = [[[NSBundle mainBundle] bundlePath] UTF8String];
 	fsGetParentPath(path, gApplicationPath);
+#else
+	getcwd(gApplicationPath, FS_MAX_PATH);
+#endif
 	gResourceMounts[RM_DEBUG] = gApplicationPath;
 	gResourceMounts[RM_SAVE_0] = gApplicationPath;
 #endif

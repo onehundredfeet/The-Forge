@@ -122,7 +122,7 @@ extern WindowDesc gCurrentWindow;
 		return CGPointZero;
 	}
 
-	NSView* view = self.contentView;
+	NSView* view = [nswindow contentView];
 	BOOL    isFlipped = [view isFlipped];
 	if (isFlipped)
 	{
