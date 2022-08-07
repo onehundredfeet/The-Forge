@@ -74,6 +74,7 @@ void mapRenderTarget(
 	ASSERT(pRenderTarget);
 	ASSERT(pRenderer);
 
+    
 #if defined(VULKAN)
 	if (gSelectedRendererApi == RENDERER_API_VULKAN)
 	{
@@ -272,7 +273,7 @@ void mapRenderTarget(
 	DECLARE_RENDERER_FUNCTION(void, mapBuffer, Renderer* pRenderer, Buffer* pBuffer, ReadRange* pRange)
 	DECLARE_RENDERER_FUNCTION(void, unmapBuffer, Renderer* pRenderer, Buffer* pBuffer)
 	extern void util_end_current_encoders(Cmd * pCmd, bool forceBarrier);
-
+    
 	// Add a staging buffer.
 	uint16_t   formatByteWidth = TinyImageFormat_BitSizeOfBlock(pRenderTarget->mFormat) / 8;
 	Buffer*    buffer = 0;
@@ -284,17 +285,18 @@ void mapRenderTarget(
 	bufferDesc.mStartState = RESOURCE_STATE_COPY_DEST;
 	addBuffer(pRenderer, &bufferDesc, &buffer);
 
+   
 	beginCmd(pCmd);
-
+   
 	RenderTargetBarrier srcBarrier = { pRenderTarget, currentResourceState, RESOURCE_STATE_COPY_SOURCE };
 	cmdResourceBarrier(pCmd, 0, 0, 0, 0, 1, &srcBarrier);
-
+   
 	if (!pCmd->mtlBlitEncoder)
 	{
 		util_end_current_encoders(pCmd, false);
 		pCmd->mtlBlitEncoder = [pCmd->mtlCommandBuffer blitCommandEncoder];
 	}
-
+    
 	// Copy to staging buffer.
 	[pCmd->mtlBlitEncoder copyFromTexture:pRenderTarget->pTexture->mtlTexture
 							  sourceSlice:0
@@ -305,7 +307,7 @@ void mapRenderTarget(
 						destinationOffset:0
 				   destinationBytesPerRow:pRenderTarget->mWidth * formatByteWidth
 				 destinationBytesPerImage:bufferDesc.mSize];
-
+ 
 	srcBarrier = { pRenderTarget, RESOURCE_STATE_COPY_SOURCE, currentResourceState };
 	cmdResourceBarrier(pCmd, 0, 0, 0, 0, 1, &srcBarrier);
 
@@ -320,11 +322,14 @@ void mapRenderTarget(
 
 	// Wait for work to finish on the GPU.
 	waitQueueIdle(pQueue);
-
 	mapBuffer(pRenderer, buffer, 0);
-	memcpy(pImageData, buffer->pCpuMappedAddress, pRenderTarget->mWidth * pRenderTarget->mHeight * formatByteWidth);
+    printf("CAPTURE Copying %d bytes from %p to %p\n", pRenderTarget->mWidth * pRenderTarget->mHeight * formatByteWidth,buffer->pCpuMappedAddress, pImageData);
+    
+	memcpy(pImageData, buffer->pCpuMappedAddress, pRenderTarget->mWidth * pRenderTarget->mHeight * formatByteWidth / 4);
+     
 	unmapBuffer(pRenderer, buffer);
 	removeBuffer(pRenderer, buffer);
+ 
 #elif defined(ORBIS)
 	mapRenderTargetOrbis(pRenderTarget, pImageData);
 #elif defined(PROSPERO)

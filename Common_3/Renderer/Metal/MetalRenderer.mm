@@ -28,7 +28,7 @@
 #ifdef METAL
 
 #define RENDERER_IMPLEMENTATION
-
+#define DEBUG_PRINT(...)
 // Argument Buffer additional debug logging
 //#define ARGUMENTBUFFER_DEBUG
 
@@ -2783,7 +2783,7 @@ void mtl_addShader(Renderer* pRenderer, const ShaderDesc* pDesc, Shader** ppShad
 			options.preprocessorMacros = macroDictionary;
 			options.languageVersion = version2_4;
 			// SHADERS HERE SHADER HERE
-			printf("Compiling shader from %s\n", source.c_str());
+			DEBUG_PRINT("Compiling shader from %s\n", source.c_str());
 			id<MTLLibrary> lib = [pRenderer->pDevice newLibraryWithSource:shaderSource options:options error:&error];
 
 			// Warning
@@ -2901,14 +2901,14 @@ void mtl_addShaderBinary(Renderer* pRenderer, const BinaryShaderDesc* pDesc, Sha
 				default: break;
 			}
 
-			printf("Creating MTL library from bytecode\n");
+			DEBUG_PRINT("Creating MTL library from bytecode\n");
 			// Create a MTLLibrary from bytecode.
 			dispatch_data_t byteCode =
 				dispatch_data_create(pStage->pByteCode, pStage->mByteCodeSize, nil, DISPATCH_DATA_DESTRUCTOR_DEFAULT);
 			id<MTLLibrary> lib = [pRenderer->pDevice newLibraryWithData:byteCode error:nil];
 			pShaderProgram->mtlLibrary = lib;
 
-			printf("Creating MTLFunction  from MTLLibrary for entrypoint %s\n", pStage->pEntryPoint);
+			DEBUG_PRINT("Creating MTLFunction  from MTLLibrary for entrypoint %s\n", pStage->pEntryPoint);
 			// Create a MTLFunction from the loaded MTLLibrary.
 			NSString*       entryPointNStr = [[NSString alloc] initWithUTF8String:pStage->pEntryPoint];
 			id<MTLFunction> function = [lib newFunctionWithName:entryPointNStr];
@@ -2928,14 +2928,14 @@ void mtl_addShaderBinary(Renderer* pRenderer, const BinaryShaderDesc* pDesc, Sha
 
 			entryNames[reflectionCount] = pStage->pEntryPoint;
 
-			printf("Creating shader reflection\n");
+			DEBUG_PRINT("Creating shader reflection\n");
 			mtl_createShaderReflection(
 				pRenderer, pShaderProgram, (const uint8_t*)pStage->pSource, pStage->mSourceSize, stage_mask, &vertexAttributeFormats,
 				&pShaderProgram->pReflection->mStageReflections[reflectionCount++]);
 		}
 	}
 
-	printf("Creating shader program\n");
+	DEBUG_PRINT("Creating shader program\n");
 	pShaderProgram->pEntryNames = (char**)tf_calloc(reflectionCount, sizeof(char*));
 	memcpy(pShaderProgram->pEntryNames, entryNames, reflectionCount * sizeof(char*));
 
@@ -2960,7 +2960,7 @@ void mtl_addShaderBinary(Renderer* pRenderer, const BinaryShaderDesc* pDesc, Sha
 
 	*ppShaderProgram = pShaderProgram;
 
-		printf("Done Creating shader program\n");
+		DEBUG_PRINT("Done Creating shader program\n");
 
 }
 

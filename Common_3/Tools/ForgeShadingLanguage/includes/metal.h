@@ -312,7 +312,7 @@ inline void AtomicMin( device uint& DST, uint VAL)
 #define SampleTex3D SampleTex1D
 
 #define LoadRWTex2D(TEX, P) (TEX).read(uint2((P).xy))
-#define LoadRWTex3D(TEX, P) (TEX).read(uint3((P).xyz))
+#define LoadRWTex3D(TEX, P) (TEX).read(uint2((P).xy),(P).z)
 
 #define LoadTex2D(NAME, SAMPLER, COORD, L) NAME.read( uint2((COORD).xy), uint(L) )
 // #define LoadLvlTex2D(TEX, SMP, P, L) (TEX).read(ushort2((P).xy), L)

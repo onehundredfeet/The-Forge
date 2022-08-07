@@ -65,6 +65,7 @@
 #include "../ThirdParty/OpenSource/murmurhash3/MurmurHash3_32.h"
 #endif
 
+#define DEBUG_PRINT(...)
 struct SubresourceDataDesc
 {
 	uint64_t mSrcOffset;
@@ -2742,7 +2743,7 @@ void mtl_compileShader(
 	Renderer* pRenderer, const char* fileName, const char* outFile, uint32_t macroCount, ShaderMacro* pMacros, BinaryShaderStageDesc* pOut,
 	const char* /*pEntryPoint*/)
 {
-	printf("MTL COMPILE SHADER\n");
+	DEBUG_PRINT("MTL COMPILE SHADER\n");
 	char filePath[FS_MAX_PATH] = {};
 	fsAppendPathComponent(fsGetResourceDirectory(RD_SHADER_SOURCES), fileName, filePath);
 	char outFilePath[FS_MAX_PATH] = {};
@@ -2758,6 +2759,7 @@ void mtl_compileShader(
 	args.push_back("-sdk");
 	args.push_back("macosx");
 	args.push_back("metal");
+	args.push_back("-frecord-sources=flat");
 	args.push_back("-c");
 	args.push_back(filePath);
 	args.push_back("-o");
@@ -2789,7 +2791,7 @@ void mtl_compileShader(
 		params += " " + arg;
 	}
 	
-	printf("Running %s %s\n", xcrun,params.c_str() );
+	DEBUG_PRINT("Running %s %s\n", xcrun,params.c_str() );
 	
 	if (systemRun(xcrun, &cArgs[0], cArgs.size(), NULL) == 0)
 	{
@@ -2819,7 +2821,7 @@ void mtl_compileShader(
 		{
 			// Remove the temp .air file.
 			const char* nativePath = intermediateFilePath;
-			systemRun("rm", &nativePath, 1, NULL);
+//			systemRun("rm", &nativePath, 1, NULL);
 
 			// Store the compiled bytecode.
 			FileStream fHandle = {};
@@ -3323,7 +3325,7 @@ bool find_shader_stage(const char* fileName, ShaderDesc* pDesc, ShaderStageDesc*
 #else
 bool find_shader_stage(const char* extension, BinaryShaderDesc* pBinaryDesc, BinaryShaderStageDesc** pOutStage, ShaderStage* pStage)
 {
-	printf("looking for stage in %s\n", extension);
+	DEBUG_PRINT("looking for stage in %s\n", extension);
 	if (stricmp(extension, "vert") == 0)
 	{
 		*pOutStage = &pBinaryDesc->mVert;
@@ -3404,7 +3406,7 @@ void addShader(Renderer* pRenderer, const ShaderLoadDesc* pDesc, Shader** ppShad
 			ShaderStage            stage;
 			BinaryShaderStageDesc* pStage = NULL;
 			char                   ext[FS_MAX_PATH] = { 0 };
-			printf("Looking for extension in %s\n", pDesc->mStages[i].pFileName);
+			DEBUG_PRINT("Looking for extension in %s\n", pDesc->mStages[i].pFileName);
 			fsGetPathExtension(pDesc->mStages[i].pFileName, ext);
 			if (find_shader_stage(ext, &binaryDesc, &pStage, &stage))
 				stages |= stage;
@@ -3439,7 +3441,7 @@ void addShader(Renderer* pRenderer, const ShaderLoadDesc* pDesc, Shader** ppShad
                     macros[pRenderer->mBuiltinShaderDefinesCount + pDesc->mStages[i].mMacroCount] = {"VR_MULTIVIEW_ENABLED", "1"};
 #endif
 
-				printf("Load shader stage byte code\n");
+				DEBUG_PRINT("Load shader stage byte code\n");
 				if (!load_shader_stage_byte_code(
 						pRenderer, pDesc->mTarget, stage, stages, pDesc->mStages[i], macroCount, macros.data(), pStage))
 					return;
@@ -3464,7 +3466,7 @@ void addShader(Renderer* pRenderer, const ShaderLoadDesc* pDesc, Shader** ppShad
 				pSources[i][metalFileSize] = 0;    // Ensure the shader text is null-terminated
 				fsCloseStream(&fh);
 
-				printf("Reading metal file\n");
+				DEBUG_PRINT("Reading metal file\n");
 #elif !defined(ORBIS) && !defined(PROSPERO)
 				if (pDesc->mStages[i].pEntryPointName)
 					pStage->pEntryPoint = pDesc->mStages[i].pEntryPointName;
