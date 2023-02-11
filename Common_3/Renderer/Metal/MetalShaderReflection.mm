@@ -544,7 +544,7 @@ void mtl_createShaderReflection(
 			renderPipelineDesc.inputPrimitiveTopology = MTLPrimitiveTopologyClassPoint;
 		}
 
-		MTLRenderPipelineReflection* ref;
+		MTLRenderPipelineReflection* ref = nullptr;
 		id<MTLRenderPipelineState>   pipelineState = [pRenderer->pDevice newRenderPipelineStateWithDescriptor:renderPipelineDesc
                                                                                                     options:MTLPipelineOptionBufferTypeInfo
                                                                                                  reflection:&ref
