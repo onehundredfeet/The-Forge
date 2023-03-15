@@ -46,7 +46,7 @@
 #include <vulkan/vulkan.h>
 #include "../../../Switch/Common_3/Renderer/Vulkan/NX/NXVulkanExt.h"
 #else
-#include "../../ThirdParty/OpenSource/volk/volk.h"
+#include <volk/volk.h>
 #endif
 
 

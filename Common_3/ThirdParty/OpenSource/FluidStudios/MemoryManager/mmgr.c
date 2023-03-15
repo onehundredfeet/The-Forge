@@ -1422,6 +1422,7 @@ void mmgrDeallocator(
 		// Wipe the deallocated RAM with a new pattern. This doen't actually do us much good in debug mode under WIN32,
 		// because Microsoft's memory debugging & tracking utilities will wipe it right after we do. Oh well.
 
+		//printf("Wiping....\n");
 		wipeWithPattern(au, releasedPattern, 0);
 
 		// Do the deallocation

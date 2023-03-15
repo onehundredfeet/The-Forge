@@ -3048,21 +3048,26 @@ void addShader(Renderer* pRenderer, const ShaderLoadDesc* pDesc, Shader** ppShad
 
     ShaderStageLoadFlags combinedFlags = SHADER_STAGE_LOAD_FLAG_NONE;
 
-    ShaderStage stages = SHADER_STAGE_NONE;
-    for (uint32_t i = 0; i < SHADER_STAGE_COUNT; ++i) {
-        if (pDesc->mStages[i].pFileName && pDesc->mStages[i].pFileName[0] != 0) {
-            ShaderStage stage;
-            BinaryShaderStageDesc* pStage = NULL;
-            char ext[FS_MAX_PATH] = {0};
-            DEBUG_PRINT("Looking for extension in %s\n", pDesc->mStages[i].pFileName);
-            fsGetPathExtension(pDesc->mStages[i].pFileName, ext);
-            if (find_shader_stage(ext, &binaryDesc, &pStage, &stage))
-                stages |= stage;
-        }
-    }
-    for (uint32_t i = 0; i < SHADER_STAGE_COUNT; ++i) {
-        if (pDesc->mStages[i].pFileName && pDesc->mStages[i].pFileName[0] != 0) {
-            const char* fileName = pDesc->mStages[i].pFileName;
+	ShaderStage stages = SHADER_STAGE_NONE;
+	for (uint32_t i = 0; i < SHADER_STAGE_COUNT; ++i)
+	{
+		if (pDesc->mStages[i].pFileName && pDesc->mStages[i].pFileName[0] != 0)
+		{
+			printf("Shader stage %d filename is %s\n", i, pDesc->mStages[i].pFileName);
+			ShaderStage            stage;
+			BinaryShaderStageDesc* pStage = NULL;
+			char                   ext[FS_MAX_PATH] = { 0 };
+			DEBUG_PRINT("Looking for extension in %s\n", pDesc->mStages[i].pFileName);
+			fsGetPathExtension(pDesc->mStages[i].pFileName, ext);
+			if (find_shader_stage(ext, &binaryDesc, &pStage, &stage))
+				stages |= stage;
+		}
+	}
+	for (uint32_t i = 0; i < SHADER_STAGE_COUNT; ++i)
+	{
+		if (pDesc->mStages[i].pFileName && pDesc->mStages[i].pFileName[0] != 0)
+		{
+			const char* fileName = pDesc->mStages[i].pFileName;
 
             ShaderStage stage;
             BinaryShaderStageDesc* pStage = NULL;

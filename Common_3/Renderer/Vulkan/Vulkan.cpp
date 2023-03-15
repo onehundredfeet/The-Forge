@@ -967,6 +967,7 @@ static VkBool32 VKAPI_PTR internal_debug_report_callback(
 	const char* pLayerPrefix = pCallbackData->pMessageIdName;
 	const char* pMessage = pCallbackData->pMessage;
 	int32_t     messageCode = pCallbackData->messageIdNumber;
+	printf("VULKAN INFO! %s %s\n", pLayerPrefix, pMessage);
 	if (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT)
 	{
 		LOGF(LogLevel::eINFO, "[%s] : %s (%i)", pLayerPrefix, pMessage, messageCode);
@@ -2115,6 +2116,7 @@ void CreateInstance(
 	const char* app_name, const RendererDesc* pDesc, uint32_t userDefinedInstanceLayerCount, const char** userDefinedInstanceLayers,
 	Renderer* pRenderer)
 {
+	printf("CREATING INSTANCE !!!!!\n");
 	// These are the extensions that we have loaded
 	const char* instanceExtensionCache[MAX_INSTANCE_EXTENSIONS] = {};
 
@@ -2153,6 +2155,12 @@ void CreateInstance(
 
 	// Instance
 	{
+		for (uint32_t j = 0; j < layerCount; ++j)
+		{
+			if (strcmp(layers[j].layerName, "VK_LAYER_RENDERDOC_Capture") == 0)
+				gRenderDocLayerEnabled = true;
+		}
+		
 		// check to see if the layers are present
 		for (uint32_t i = 0; i < (uint32_t)layerTemp.size(); ++i)
 		{
@@ -2258,11 +2266,16 @@ void CreateInstance(
 		VkValidationFeaturesEXT      validationFeaturesExt = { VK_STRUCTURE_TYPE_VALIDATION_FEATURES_EXT };
 		VkValidationFeatureEnableEXT enabledValidationFeatures[] = {
 			VK_VALIDATION_FEATURE_ENABLE_GPU_ASSISTED_EXT,
+			VK_VALIDATION_FEATURE_ENABLE_GPU_ASSISTED_RESERVE_BINDING_SLOT_EXT,
+			VK_VALIDATION_FEATURE_ENABLE_BEST_PRACTICES_EXT,
+			VK_VALIDATION_FEATURE_ENABLE_DEBUG_PRINTF_EXT,
+			VK_VALIDATION_FEATURE_ENABLE_SYNCHRONIZATION_VALIDATION_EXT
 		};
 
 		if (pDesc->mEnableGPUBasedValidation)
 		{
-			validationFeaturesExt.enabledValidationFeatureCount = 1;
+			printf("---- > ENABLING VALIDATION!!!!\n");
+			validationFeaturesExt.enabledValidationFeatureCount = 5;
 			validationFeaturesExt.pEnabledValidationFeatures = enabledValidationFeatures;
 		}
 #endif
@@ -2297,7 +2310,7 @@ void CreateInstance(
 			VkDebugUtilsMessengerCreateInfoEXT create_info = {};
 			create_info.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
 			create_info.pfnUserCallback = internal_debug_report_callback;
-			create_info.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
+			create_info.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT;
 			create_info.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
 									  VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
 			create_info.flags = 0;
