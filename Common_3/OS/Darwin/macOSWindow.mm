@@ -277,7 +277,10 @@ extern WindowDesc gCurrentWindow;
 	metalLayer.framebufferOnly = YES;    //todo: optimized way
 	metalLayer.pixelFormat = hdr ? MTLPixelFormatRGBA16Float : MTLPixelFormatBGRA8Unorm;
 	metalLayer.wantsExtendedDynamicRangeContent = hdr ? true : false;
-	metalLayer.drawableSize = CGSizeMake(self.frame.size.width, self.frame.size.height);
+	float dpiScale[2];
+	getDpiScale(dpiScale);
+	metalLayer.drawableSize = CGSizeMake(self.frame.size.width * dpiScale[0], self.frame.size.height * dpiScale[1]);
+//	metalLayer.drawableSize = CGSizeMake(self.frame.size.width, self.frame.size.height);
 #if defined(ENABLE_DISPLAY_SYNC_TOGGLE)
 	if (@available(macOS 10.13, *))
 	{
