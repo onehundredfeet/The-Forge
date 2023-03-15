@@ -3244,7 +3244,7 @@ void mtl_compileShader(
 		{
 			// Remove the temp .air file.
 			const char* nativePath = intermediateFilePath;
-			systemRun("rm", &nativePath, 1, NULL);
+			//systemRun("rm", &nativePath, 1, NULL);
 
 			// Store the compiled bytecode.
 			FileStream fHandle = {};
