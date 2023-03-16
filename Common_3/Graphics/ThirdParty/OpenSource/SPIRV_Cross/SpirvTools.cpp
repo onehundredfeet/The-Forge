@@ -31,13 +31,13 @@
 #pragma warning(disable : 4996)    // warning C4996: 'std::move_backward::_Unchecked_iterators::_Deprecate'
 #endif
 
-#include "spirv_cross.hpp"
+#include <spirv_cross/spirv_cross.hpp>
 
 // helper functions
 void ReflectBoundResources(
    spirv_cross::Compiler* pCompiler,
    const spirv_cross::SmallVector<spirv_cross::Resource>& allResources,
-   const std::unordered_set<uint32_t>& usedResouces,
+   const std::unordered_set<spirv_cross::VariableID>& usedResouces,
    SPIRV_Resource* resources,
    uint32_t* current_resource,
    SPIRV_Resource_Type spriv_type)
@@ -201,7 +201,7 @@ void ReflectShaderResources(CrossCompiler* pCompiler)
 
    // 1. get all shader resources
    spirv_cross::ShaderResources allResources;
-   std::unordered_set<uint32_t> usedResouces;
+   std::unordered_set<spirv_cross::VariableID> usedResouces;
 
    allResources = compiler->get_shader_resources();
    usedResouces = compiler->get_active_interface_variables();
