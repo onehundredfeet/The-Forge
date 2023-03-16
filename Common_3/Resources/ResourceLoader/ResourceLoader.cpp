@@ -3338,10 +3338,11 @@ struct FSLHeader
 	FSLMetadata mMetadata;
 };
 
-void loadByteCode(Renderer* pRenderer, ResourceDirectory resourceDir, const char* binaryShaderPath, BinaryShaderStageDesc* pOut, ShaderByteCodeBuffer* pShaderByteCodeBuffer, FSLMetadata* pOutMetadata)
+bool loadByteCode(Renderer* pRenderer, ResourceDirectory resourceDir, const char* binaryShaderPath, BinaryShaderStageDesc* pOut, ShaderByteCodeBuffer* pShaderByteCodeBuffer, FSLMetadata* pOutMetadata)
 {
 	FileStream binaryFileStream = {};
 	const bool result = fsOpenStreamFromPath(resourceDir, binaryShaderPath, FM_READ_BINARY, NULL, &binaryFileStream);
+	if (!result) return false;
 	ASSERT(result);
 
 	ssize_t size = fsGetStreamFileSize(&binaryFileStream);
@@ -3414,6 +3415,7 @@ void loadByteCode(Renderer* pRenderer, ResourceDirectory resourceDir, const char
 	}
 
 	fsCloseStream(&binaryFileStream);
+	return true;
 }
 
 
@@ -3529,9 +3531,10 @@ bool load_shader_stage_byte_code(
 		if (gSelectedRendererApi != RENDERER_API_GLES)
 #endif
 		{
-			loadByteCode(pRenderer, RD_SHADER_BINARIES, (const char*)fileNameAPI.data, pOut, pShaderByteCodeBuffer, pOutMetadata);
-			cleanup();
-			return true;
+			if (loadByteCode(pRenderer, RD_SHADER_BINARIES, (const char*)fileNameAPI.data, pOut, pShaderByteCodeBuffer, pOutMetadata)) {
+				cleanup();
+				return true;
+			}
 		}
 	}
 
