@@ -6023,7 +6023,7 @@ void vk_addRootSignature(Renderer* pRenderer, const RootSignatureDesc* pRootSign
 	UpdateFrequencyLayoutInfo	layouts[kMaxLayoutCount] = {};
 	VkPushConstantRange			pushConstants[SHADER_STAGE_COUNT] = {};
 	uint32_t					pushConstantCount = 0;
-	uint32_t					pushConstantOffset = 0;
+	uint32_t					pushConstantTotalSize = 0;
 	ShaderResource*				shaderResources = NULL;
 	StaticSamplerNode*			staticSamplerMap = NULL;
 	sh_new_arena(staticSamplerMap);
@@ -6257,13 +6257,13 @@ void vk_addRootSignature(Renderer* pRenderer, const RootSignatureDesc* pRootSign
 			pDesc->mHandleIndex = pushConstantCount++;
 
 			pushConstants[pDesc->mHandleIndex] = {};
-			pushConstants[pDesc->mHandleIndex].offset = pushConstantOffset;
+			pushConstants[pDesc->mHandleIndex].offset = pushConstantTotalSize;
 			pushConstants[pDesc->mHandleIndex].size = pDesc->mSize;
 			pushConstants[pDesc->mHandleIndex].stageFlags = pDesc->mVulkan.mVkStages;
 
-			LOGF(LogLevel::eINFO, "Descriptor (%s) : User specified Push Constant [offset %d, length %d] in stages %x -> %x", pDesc->pName, pushConstantOffset, pDesc->mSize, pRes->used_stages,  util_to_vk_shader_stage_flags(pRes->used_stages));
-			pDesc->mOffset = pushConstantOffset;
-			pushConstantOffset += pDesc->mSize;
+			LOGF(LogLevel::eINFO, "Descriptor (%s) : User specified Push Constant [offset %d, length %d] in stages %x -> %x", pDesc->pName, pushConstantTotalSize, pDesc->mSize, pRes->used_stages,  util_to_vk_shader_stage_flags(pRes->used_stages));
+			pDesc->mOffset = pushConstantTotalSize;
+			pushConstantTotalSize += pDesc->mSize;
 		}
 	}
 
