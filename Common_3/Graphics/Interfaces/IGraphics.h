@@ -1468,7 +1468,8 @@ typedef struct DEFINE_ALIGNED(DescriptorInfo, 16)
 	uint32_t    mRootDescriptor : 1;
 	uint32_t    mStaticSampler : 1;
 	uint32_t    mUpdateFrequency : 3;
-	uint32_t    mSize;
+	uint32_t    mOffset : 16;
+	uint32_t    mSize : 16;
 	uint32_t    mHandleIndex;
 	union
 	{
