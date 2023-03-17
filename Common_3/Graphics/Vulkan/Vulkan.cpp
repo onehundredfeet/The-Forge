@@ -4137,6 +4137,7 @@ void vk_addBuffer(Renderer* pRenderer, const BufferDesc* pDesc, Buffer** ppBuffe
 	{
 		uint64_t minAlignment = pRenderer->pActiveGpuSettings->mUniformBufferAlignment;
 		allocationSize = round_up_64(allocationSize, minAlignment);
+		printf("RENDER VULKAN ADD BUFFER requested %lld, allocated %lld\n", pDesc->mSize, allocationSize);
 	}
 
 	DECLARE_ZERO(VkBufferCreateInfo, add_info);
@@ -5146,10 +5147,11 @@ void vk_addDescriptorSet(Renderer* pRenderer, const DescriptorSetDesc* pDesc, De
 			writeSet.descriptorType = (VkDescriptorType)descInfo->mVulkan.mVkType;
 			writeSet.dstArrayElement = 0;
 			writeSet.dstBinding = descInfo->mVulkan.mReg;
-
+			printf("VULKAN INTERNAL writing desc index [%d] with binding %d\n", descIndex, writeSet.dstBinding );
 			for (uint32_t index = 0; index < pDesc->mMaxSets; ++index)
 			{
 				writeSet.dstSet = pDescriptorSet->mVulkan.pHandles[index];
+//				printf("\tVULKAN INTERNAL writing dest set index [%d]\n", writeSet.dstSet );
 
 				switch (type)
 				{
@@ -6172,6 +6174,7 @@ void vk_addRootSignature(Renderer* pRenderer, const RootSignatureDesc* pRootSign
 		// If descriptor is not a root constant create a new layout binding for this descriptor and add it to the binding array
 		if (pDesc->mType != DESCRIPTOR_TYPE_ROOT_CONSTANT)
 		{
+			printf("VULKAN INTERNAL RESOURCE %lld binding is %d\n", i, pRes->reg);
 			VkDescriptorSetLayoutBinding binding = {};
 			binding.binding = pRes->reg;
 			binding.descriptorCount = pDesc->mSize;
@@ -6223,6 +6226,7 @@ void vk_addRootSignature(Renderer* pRenderer, const RootSignatureDesc* pRootSign
 
 			if (binding.descriptorType == VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC)
 			{
+				printf("VULKAN INTERNAL DYNAMIC UNIFORM on set %d, size %d, named %s\n", setIndex, pDesc->mSize, pDesc->pName);
 				arrpush(layouts[setIndex].mDynamicDescriptors, pDesc);
 				pDesc->mRootDescriptor = true;
 			}
@@ -6250,6 +6254,7 @@ void vk_addRootSignature(Renderer* pRenderer, const RootSignatureDesc* pRootSign
 		// If descriptor is a root constant, add it to the root constant array
 		else
 		{
+			printf("VULKAN INTERNAL PUSH CONSTANT [Resouce %lld] would be %d\n", i, pRes->reg);
 
 			pDesc->mRootDescriptor = true;
 			pDesc->mVulkan.mVkStages = util_to_vk_shader_stage_flags(pRes->used_stages);
@@ -6319,6 +6324,7 @@ void vk_addRootSignature(Renderer* pRenderer, const RootSignatureDesc* pRootSign
 			DescriptorInfo* pDesc = layout.mDescriptors[descIndex];
 			if (!pDesc->mRootDescriptor)
 			{
+				printf("VULKAN INTERNAL Setting handle [%lld] index to %d\n", descIndex, cumulativeDescriptorCount);
 				pDesc->mHandleIndex = cumulativeDescriptorCount;
 				cumulativeDescriptorCount += pDesc->mSize;
 			}
@@ -6334,6 +6340,7 @@ void vk_addRootSignature(Renderer* pRenderer, const RootSignatureDesc* pRootSign
 			{
 				DescriptorInfo* pDesc = layout.mDynamicDescriptors[descIndex];
 				pDesc->mHandleIndex = descIndex;
+				printf("VULKAN INTERNAL Setting dynamic descriptor handle index to [%d]\n", descIndex);
 			}
 		}
 	}
@@ -6646,7 +6653,13 @@ static void addGraphicsPipeline(Renderer* pRenderer, const PipelineDesc* pMainDe
 		DECLARE_ZERO(VkPipelineColorBlendAttachmentState, cbAtt[MAX_RENDER_TARGET_ATTACHMENTS]);
 		cb = pDesc->pBlendState ? util_to_blend_desc(pDesc->pBlendState, cbAtt) : gDefaultBlendDesc;
 		cb.attachmentCount = pDesc->mRenderTargetCount;
-
+		printf("RENDER VULKAN Blend state %p\n",  pDesc->pBlendState);
+		if ( pDesc->pBlendState != nullptr) {
+			/*
+			for (int i = 0; i < MAX_RENDER_TARGET_ATTACHMENTS; i++) {
+				printf("RENDER VULKAN Color mask %x\n", cb.pAttachments[0].colorWriteMask);
+			}*/
+		}
 		VkDynamicState dyn_states[] =
 		{
 			VK_DYNAMIC_STATE_VIEWPORT,

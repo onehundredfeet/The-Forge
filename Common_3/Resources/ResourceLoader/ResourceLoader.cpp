@@ -2705,6 +2705,7 @@ void addResource(BufferLoadDesc* pBufferDesc, SyncToken* token)
 	{
 		pBufferDesc->mDesc.mStartState = RESOURCE_STATE_COMMON;
 	}
+	printf("VULKAN INTERNAL Adding resource - Buffer %s - %d size\n ", pBufferDesc->mDesc.pName, pBufferDesc->mDesc.mSize);
 	addBuffer(pResourceLoader->ppRenderers[pBufferDesc->mDesc.mNodeIndex], &pBufferDesc->mDesc, pBufferDesc->ppBuffer);
 
 	if (update)
@@ -2859,6 +2860,7 @@ void beginUpdateResource(BufferUpdateDesc* pBufferUpdate)
 	ResourceMemoryUsage memoryUsage = (ResourceMemoryUsage)pBufferUpdate->pBuffer->mMemoryUsage;
 	if (gUma || memoryUsage != RESOURCE_MEMORY_USAGE_GPU_ONLY)
 	{
+		LOGF(LogLevel::eINFO, "RENDER FORGE INTERNAL beginUpdateResource gUma\n");
 		bool map = !pBuffer->pCpuMappedAddress;
 		if (map)
 		{
@@ -2871,6 +2873,7 @@ void beginUpdateResource(BufferUpdateDesc* pBufferUpdate)
 	}
 	else
 	{
+		LOGF(LogLevel::eINFO, "RENDER FORGE INTERNAL beginUpdateResource Staging buffer\n");
 		// We need to use a staging buffer.
 		MappedMemoryRange range = allocateUploadMemory(pResourceLoader->ppRenderers[pBuffer->mNodeIndex], size, RESOURCE_BUFFER_ALIGNMENT);
 		pBufferUpdate->pMappedData = range.pData;
