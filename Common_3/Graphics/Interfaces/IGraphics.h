@@ -2337,6 +2337,7 @@ typedef struct VertexAttrib
 	TinyImageFormat  mFormat;
 	uint32_t         mBinding;
 	uint32_t         mLocation;
+	uint32_t		 mStride;
 	uint32_t         mOffset;
 	VertexAttribRate mRate;
 } VertexAttrib;

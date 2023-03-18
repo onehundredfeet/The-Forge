@@ -6574,7 +6574,9 @@ static void addGraphicsPipeline(Renderer* pRenderer, const PipelineDesc* pMainDe
 				{
 					input_bindings[input_binding_count - 1].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
 				}
-				input_bindings[input_binding_count - 1].stride += TinyImageFormat_BitSizeOfBlock(attrib->mFormat) / 8;
+//				input_bindings[input_binding_count - 1].stride += TinyImageFormat_BitSizeOfBlock(attrib->mFormat) / 8;
+				input_bindings[input_binding_count - 1].stride = attrib->mStride;
+				
 
 				input_attributes[input_attribute_count].location = attrib->mLocation;
 				input_attributes[input_attribute_count].binding = attrib->mBinding;
