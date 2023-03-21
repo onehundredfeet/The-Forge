@@ -1009,6 +1009,7 @@ void mtl_updateDescriptorSet(
 				}
 				default:
 				{
+					printf("Unsupported descriptor type %u [%d/%u]\n", type, paramIndex, pRootSignature->mDescriptorCount);
 					ASSERT(0);    // unsupported descriptor type
 					break;
 				}
