@@ -7252,6 +7252,24 @@ void vk_cmdDispatch(Cmd* pCmd, uint32_t groupCountX, uint32_t groupCountY, uint3
 	vkCmdDispatch(pCmd->mVulkan.pVkCmdBuf, groupCountX, groupCountY, groupCountZ);
 }
 
+std::string imageLayoutToStr( uint layout) {
+	std::string buf;
+
+	if (layout == VK_IMAGE_LAYOUT_GENERAL) buf = "VK_IMAGE_LAYOUT_GENERAL";
+	if (layout == VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL) buf = "VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL";
+	if (layout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL) buf = "VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL";
+	if (layout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL) buf = "VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL";
+	if (layout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) buf = "VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL";
+	if (layout == VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL) buf = "VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL";
+	if (layout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL) buf = "VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL";
+	if (layout == VK_IMAGE_LAYOUT_PREINITIALIZED) buf = "VK_IMAGE_LAYOUT_PREINITIALIZED";
+	if (layout == VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_STENCIL_ATTACHMENT_OPTIMAL) buf = "VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_STENCIL_ATTACHMENT_OPTIMAL";
+	if (layout == VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_STENCIL_READ_ONLY_OPTIMAL) buf = "VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_STENCIL_READ_ONLY_OPTIMAL";
+	if (layout == VK_IMAGE_LAYOUT_PRESENT_SRC_KHR) buf = "VK_IMAGE_LAYOUT_PRESENT_SRC_KHR";
+
+
+return buf;
+}
 void vk_cmdResourceBarrier(
 	Cmd* pCmd, uint32_t numBufferBarriers, BufferBarrier* pBufferBarriers, uint32_t numTextureBarriers, TextureBarrier* pTextureBarriers,
 	uint32_t numRtBarriers, RenderTargetBarrier* pRtBarriers)
@@ -7348,6 +7366,11 @@ void vk_cmdResourceBarrier(
 			pImageBarrier->dstAccessMask = util_to_vk_access_flags(pTrans->mNewState);
 			pImageBarrier->oldLayout = util_to_vk_image_layout(pTrans->mCurrentState);
 			pImageBarrier->newLayout = util_to_vk_image_layout(pTrans->mNewState);
+
+			auto oldLayout = imageLayoutToStr( pImageBarrier->oldLayout );
+			auto newLayout = imageLayoutToStr( pImageBarrier->newLayout );
+			
+			printf("Old layout is [%d] %s\nnew layout is [%d] %s\n", pImageBarrier->oldLayout,oldLayout.c_str(),  pImageBarrier->newLayout, newLayout.c_str());
 		}
 
 		if (pImageBarrier)
