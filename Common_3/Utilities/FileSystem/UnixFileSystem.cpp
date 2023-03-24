@@ -102,7 +102,7 @@ bool UnixOpenFile(ResourceDirectory resourceDir, const char* fileName, FileMode 
 	}
 	if(!file)
 	{
-		LOGF(LogLevel::eERROR, "Error opening file: %s -- %s (error: %s)", filePath, modeStr, strerror(errno));
+		LOGF(LogLevel::eWARNING, "Error opening file: %s -- %s (error: %s)", filePath, modeStr, strerror(errno));
 		return false;
 	}
 

@@ -3428,6 +3428,7 @@ bool check_for_byte_code(Renderer* pRenderer, const char* binaryShaderPath, time
 	// If source code is loaded from a package, its timestamp will be zero. Else check that binary is not older
 	// than source
 	time_t dstTimeStamp = fsGetLastModifiedTime(RD_SHADER_BINARIES, binaryShaderPath);
+	printf("TEMP Checking date code for binary %s modified %lld vs %lld\n", binaryShaderPath, dstTimeStamp, sourceTimeStamp );
 	if (!sourceTimeStamp || (dstTimeStamp < sourceTimeStamp))
 		return false;
 
@@ -3534,14 +3535,15 @@ bool load_shader_stage_byte_code(
 		if (gSelectedRendererApi != RENDERER_API_GLES)
 #endif
 		{
+			#if defined(FORGE_SHADER_COMPILER)
 			if (loadByteCode(pRenderer, RD_SHADER_BINARIES, (const char*)fileNameAPI.data, pOut, pShaderByteCodeBuffer, pOutMetadata)) {
 				cleanup();
 				return true;
 			}
+			#endif
 		}
 	}
 
-	LOGF(eINFO, "Compiling shader in runtime: %s -> '%s' macroCount=%u", getRendererAPIName(), loadDesc.pFileName, macroCount);
 	
 #if defined (NX64)
 	return false;
@@ -3593,6 +3595,8 @@ bool load_shader_stage_byte_code(
 	// Shader source is newer than binary
 	if (!check_for_byte_code(pRenderer, (const char*)binaryShaderComponent.data, timeStamp, pOut, pShaderByteCodeBuffer))
 	{
+		LOGF(eINFO, "Compiling shader in runtime: binary [%s] [%s] %s -> '%s' macroCount=%u", (const char*)binaryShaderComponent.data, fileNameAPI.data, getRendererAPIName(), loadDesc.pFileName, macroCount);
+
 		switch (gSelectedRendererApi)
 		{
 #if defined(DIRECT3D12)
