@@ -3428,7 +3428,7 @@ bool check_for_byte_code(Renderer* pRenderer, const char* binaryShaderPath, time
 	// If source code is loaded from a package, its timestamp will be zero. Else check that binary is not older
 	// than source
 	time_t dstTimeStamp = fsGetLastModifiedTime(RD_SHADER_BINARIES, binaryShaderPath);
-	printf("TEMP Checking date code for binary %s modified %lld vs %lld\n", binaryShaderPath, dstTimeStamp, sourceTimeStamp );
+	printf("TEMP Checking date code for binary %s modified dst time %lld vs source time %lld\n", binaryShaderPath, dstTimeStamp, sourceTimeStamp );
 	if (!sourceTimeStamp || (dstTimeStamp < sourceTimeStamp))
 		return false;
 

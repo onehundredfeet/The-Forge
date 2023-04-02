@@ -7469,9 +7469,9 @@ void vk_cmdResourceBarrier(
 
 	if (bufferBarrierCount || imageBarrierCount)
 	{
-		printf("Vulkan.cpp 7472 bufferBarrierCount %d (%p) imageBarrierCount %d\n", bufferBarrierCount, bufferBarriers, imageBarrierCount);
+//		printf("Vulkan.cpp 7472 bufferBarrierCount %d (%p) imageBarrierCount %d\n", bufferBarrierCount, bufferBarriers, imageBarrierCount);
 		for (int i = 0; i < bufferBarrierCount; i++) {
-			printf("\tbufferBarrierCount[%d] - %p size %lld ptr %p", i, bufferBarriers[i].buffer, bufferBarriers[i].size);fflush(stdout);
+//			printf("\tbufferBarrierCount[%d] size %lld ptr %p", i, bufferBarriers[i].size,  bufferBarriers[i].buffer );fflush(stdout);
 		}
 		
 		vkCmdPipelineBarrier(
